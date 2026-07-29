@@ -121,13 +121,6 @@ function handleLeave(socket) {
   }
 }
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`伺服器運作中: http://localhost:${PORT}`);
-});
-// server.js (精簡說明修改處)
-// ...前面的套件引入與宣告維持不變...
-
 app.use(express.static(path.join(__dirname)));
 
 // 預設進入根目錄時，開啟 Home.html
