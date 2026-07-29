@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>有聊 havetalk - 配對區</title>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background-color: #1e1e1e;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                color: white;
+            }
+
+            header {
+                background: #2a2a2a;
+                color: white;
+                padding: 15px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #333;
+            }
+
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            .btn-danger {
+                background: #fa3e3e;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                border: none;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 0.9rem;
+            }
+
+            #main-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .setup-card {
+                width: 100%;
+                max-width: 360px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .secret-input {
+                width: 100%;
+                padding: 15px;
+                border-radius: 4px;
+                border: none;
+                background-color: #dcdcdc;
+                font-size: 1.2rem;
+                text-align: center;
+                color: #333;
+                outline: none;
+            }
+
+            .secret-input::placeholder {
+                color: #888;
+            }
+
+            .start-btn {
+                width: 100%;
+                padding: 15px;
+                background-color: #00b050;
+                color: white;
+                font-size: 1.3rem;
+                font-weight: bold;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            .start-btn:hover {
+                background-color: #009343;
+            }
+
+            #chat-box {
+                width: 100%;
+                height: 100%;
+                padding: 15px;
+                overflow-y: auto;
+                display: none;
+                flex-direction: column;
+                gap: 10px;
+                background-color: #f0f2f5;
+                color: #333;
+            }
+
+            .system-msg {
+                align-self: center;
+                background: #e1e3e8;
+                color: #555;
+                padding: 6px 14px;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                margin: 5px 0;
+            }
+
+            .message {
+                max-width: 70%;
+                padding: 10px 14px;
+                border-radius: 12px;
+                word-wrap: break-word;
+                font-size: 0.95rem;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .message .sender-name {
+                font-size: 0.75rem;
+                margin-bottom: 3px;
+                opacity: 0.8;
+            }
+
+            .my-message {
+                align-self: flex-end;
+                background: #0084ff;
+                color: white;
+            }
+
+            .other-message {
+                align-self: flex-start;
+                background: #e4e6eb;
+                color: #050505;
+            }
+
+            #input-area {
+                display: none;
+                padding: 10px;
+                background: white;
+                border-top: 1px solid #ddd;
+            }
+
+            #message-input {
+                flex: 1;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 20px;
+                outline: none;
+                font-size: 1rem;
+            }
+
+            #send-btn {
+                margin-left: 10px;
+                padding: 0 20px;
+                background: #0084ff;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            #send-btn:disabled {
+                background: #ccc;
+                cursor: not-allowed;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <header>
+            <h1>有聊 havetalk</h1>
+            <button id="leave-btn" class="btn-danger" style="display: none;">離開</button>
+        </header>
+
+        <div id="main-content">
+            <div id="setup-card" class="setup-card">
+                <input type="text" id="secret-key" class="secret-input" placeholder="暗號 (選填)" autocomplete="off" />
+                <button id="start-match-btn" class="start-btn">開始配對</button>
+            </div>
+            <div id="chat-box"></div>
+        </div>
+
+        <form id="input-area">
+            <input type="text" id="message-input" placeholder="請先開始配對..." autocomplete="off" disabled required />
+            <button type="submit" id="send-btn" disabled>傳送</button>
+        </form>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            // 1. 建立專屬 Session ID 以防止重新整理斷線
+            let sessionId = localStorage.getItem('chatSessionId');
+            if (!sessionId) {
+                sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('chatSessionId', sessionId);
+            }
+
+            const socket = io({ auth: { sessionId } });
+
+            const leaveBtn = document.getElementById('leave-btn');
+            const setupCard = document.getElementById('setup-card');
+            const startMatchBtn = document.getElementById('start-match-btn');
+            const secretInput = document.getElementById('secret-key');
+            const chatBox = document.getElementById('chat-box');
+            const inputArea = document.getElementById('input-area');
+            const form = document.getElementById('input-area');
+            const input = document.getElementById('message-input');
+            const sendBtn = document.getElementById('send-btn');
+
+            let inRoom = false;
+            let msgCount = 0; // 紀錄房間內的總訊息數
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const nickname = localStorage.getItem('userNickname');
+                const gender = localStorage.getItem('userGender');
+                if (!nickname || !gender) window.location.href = 'Home.html';
+            });
+
+            // 開始配對
+            startMatchBtn.addEventListener('click', () => {
+                const nickname = localStorage.getItem('userNickname');
+                const gender = localStorage.getItem('userGender');
+                const secretKey = secretInput.value;
+
+                setupCard.style.display = 'none';
+                chatBox.style.display = 'flex';
+                inputArea.style.display = 'flex';
+                leaveBtn.style.display = 'inline-block';
+
+                chatBox.innerHTML = '';
+                msgCount = 0;
+                socket.emit('start match', { nickname, gender, secretKey });
+                appendSystemMsg('尋找對象中，請稍候...');
+            });
+
+            // === 重點邏輯：離開按鈕與驗證 ===
+            leaveBtn.addEventListener('click', () => {
+                if (msgCount >= 30) {
+                    const answer = prompt('雙方聊天已經達 30 句囉！\n請在下方輸入「Leave」才能離開：');
+                    if (answer !== 'Leave') {
+                        return; // 若輸入錯誤或按取消，中斷離開動作
+                    }
+                }
+
+                // 驗證成功或未滿 30 句，執行離開
+                socket.emit('leave room');
+                window.location.reload(); // 刷新回到初始畫面
+            });
+
+            // 接收系統狀態
+            socket.on('status', (msg) => {
+                appendSystemMsg(msg);
+            });
+
+            // 配對成功
+            socket.on('matched', (data) => {
+                setChatState(true);
+                msgCount = 0;
+                const secretNotice = data.secretKey !== 'default' ? `（暗號：${data.secretKey}）` : '';
+                const genderSign = data.partner.gender === 'male' ? '♂ (男)' : '♀ (女)';
+                appendSystemMsg(`🎉 配對成功${secretNotice}！對方是【${data.partner.nickname} ${genderSign}】，連線成功，可以開始聊天了！`);
+            });
+
+            // 重新整理後恢復連線
+            socket.on('rejoined', (data) => {
+                setupCard.style.display = 'none';
+                chatBox.style.display = 'flex';
+                inputArea.style.display = 'flex';
+                leaveBtn.style.display = 'inline-block';
+                setChatState(true);
+
+                msgCount = data.msgCount; // 恢復訊息數量
+                const genderSign = data.partner.gender === 'male' ? '♂ (男)' : '♀ (女)';
+
+                appendSystemMsg(`🔄 您已重新連線！與【${data.partner.nickname} ${genderSign}】的聊天繼續。`);
+
+                // 恢復對話歷史紀錄
+                data.history.forEach(msg => {
+                    renderMessage(msg.senderId, msg.senderName, msg.text);
+                });
+            });
+
+            // 對方離開
+            socket.on('partner left', () => {
+                setChatState(false);
+                appendSystemMsg('❌ 陌生人已離開聊天室。按下上方「離開」按鈕可重新開始。');
+            });
+
+            // 發送訊息
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (input.value.trim() && inRoom) {
+                    socket.emit('chat message', input.value);
+                    input.value = '';
+                }
+            });
+
+            // 接收聊天訊息
+            socket.on('chat message', (data) => {
+                msgCount = data.msgCount; // 更新目前的訊息數量
+                renderMessage(data.senderId, data.senderName, data.text);
+            });
+
+            // 統整發送訊息的介面渲染
+            function renderMessage(senderId, senderName, text) {
+                const msgDiv = document.createElement('div');
+                msgDiv.classList.add('message');
+
+                // 判斷是否為自己的訊息 (比對 SessionId)
+                if (senderId === sessionId) {
+                    msgDiv.classList.add('my-message');
+                    msgDiv.textContent = text;
+                } else {
+                    msgDiv.classList.add('other-message');
+                    const nameSpan = document.createElement('span');
+                    nameSpan.classList.add('sender-name');
+                    nameSpan.textContent = senderName;
+                    msgDiv.appendChild(nameSpan);
+                    msgDiv.appendChild(document.createTextNode(text));
+                }
+
+                chatBox.appendChild(msgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            function setChatState(active) {
+                inRoom = active;
+                input.disabled = !active;
+                sendBtn.disabled = !active;
+                input.placeholder = active ? "輸入訊息..." : "配對已結束...";
+            }
+
+            function appendSystemMsg(text) {
+                const sysDiv = document.createElement('div');
+                sysDiv.classList.add('system-msg');
+                sysDiv.textContent = text;
+                chatBox.appendChild(sysDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        </script>
+    </body>
+
+</html>

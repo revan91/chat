@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -9,146 +8,173 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.use(express.static(path.join(__dirname)));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Home.html')));
 
-// 1. 將單一等待佇列改為「密語隊列池」
-// 格式如：{ 'default': ['socketA'], 'dcard': ['socketB', 'socketC'] }
 let waitingQueues = {};
-
-// 2. 紀錄每一個 Socket 目前在的房間以及使用的密語 (socket.id -> { roomId, secretKey })
-const userSessions = new Map();
+// 紀錄 Session: sessionId -> { socketId, roomId, nickname, gender, disconnectTimer }
+const sessions = new Map();
+// 紀錄房間狀態: roomId -> { msgCount, history: [], users: [sessionId1, sessionId2] }
+const rooms = new Map();
 
 io.on('connection', (socket) => {
-  console.log(`[連線] 使用者已連線: ${socket.id}`);
+  const sessionId = socket.handshake.auth.sessionId;
+  if (!sessionId) return; // 阻擋沒有 Session 的異常連線
 
-  // 1. 使用者點擊「開始配對」（可帶入密語 secretKey）
-  socket.on('start match', (secretKey) => {
-    // 預設密語為 'default' (無密語時的隨機配對)
-    const key = secretKey && secretKey.trim() !== '' ? secretKey.trim().toLowerCase() : 'default';
+  // 1. 處理重新連線或新加入的使用者
+  let session = sessions.get(sessionId);
+  if (session) {
+    session.socketId = socket.id;
+    // 取消因為剛剛重整而倒數的斷線計時器
+    if (session.disconnectTimer) {
+      clearTimeout(session.disconnectTimer);
+      session.disconnectTimer = null;
+    }
 
-    // 避免重複加入
-    if (!userSessions.has(socket.id)) {
-      // 若該密語的隊列還不存在，先建立一個空陣列
-      if (!waitingQueues[key]) {
-        waitingQueues[key] = [];
+    // 若該使用者本來就在房間內，幫他重新加入
+    if (session.roomId && rooms.has(session.roomId)) {
+      socket.join(session.roomId);
+      const room = rooms.get(session.roomId);
+      
+      // 找出對方的資料
+      const partnerId = room.users.find(id => id !== sessionId);
+      const partner = sessions.get(partnerId);
+
+      if (partner) {
+        socket.emit('rejoined', {
+          partner: { nickname: partner.nickname, gender: partner.gender },
+          msgCount: room.msgCount,
+          history: room.history
+        });
+        socket.to(session.roomId).emit('status', `對方剛剛重新整理了，已恢復連線。`);
       }
+    }
+  } else {
+    // 建立新的 Session
+    session = { sessionId, socketId: socket.id, roomId: null };
+    sessions.set(sessionId, session);
+  }
 
-      // 將使用者加入對應密語的佇列
-      if (!waitingQueues[key].includes(socket.id)) {
-        waitingQueues[key].push(socket.id);
+  // 2. 開始配對
+  socket.on('start match', (data) => {
+    session.nickname = typeof data === 'object' ? (data.nickname || '匿名者') : '匿名者';
+    session.gender = typeof data === 'object' ? (data.gender || 'unknown') : 'unknown';
+    const rawSecret = typeof data === 'object' ? data.secretKey : data;
+    const key = rawSecret && rawSecret.trim() !== '' ? rawSecret.trim().toLowerCase() : 'default';
 
-        const displayKeyMsg = key === 'default' ? '' : `（密語：${key}）`;
-        socket.emit('status', `正在為您尋找陌生人${displayKeyMsg}...`);
-        console.log(`[佇列] ${socket.id} 加入密語 [${key}] 等待區，該區人數: ${waitingQueues[key].length}`);
-
-        // 觸發該密語分區的配對
+    if (!session.roomId) {
+      if (!waitingQueues[key]) waitingQueues[key] = [];
+      if (!waitingQueues[key].some(sId => sId === sessionId)) {
+        waitingQueues[key].push(sessionId);
+        socket.emit('status', `正在為您尋找陌生人...`);
         tryMatch(key);
       }
     }
   });
 
-  // 2. 傳送聊天訊息
+  // 3. 傳送聊天訊息
   socket.on('chat message', (msg) => {
-    const session = userSessions.get(socket.id);
-    if (session && session.roomId) {
-      io.to(session.roomId).emit('chat message', {
-        senderId: socket.id,
-        text: msg
-      });
+    if (session.roomId && rooms.has(session.roomId)) {
+      const room = rooms.get(session.roomId);
+      room.msgCount++; // 累加訊息數
+
+      const messageData = {
+        senderId: sessionId,
+        senderName: session.nickname,
+        text: msg,
+        msgCount: room.msgCount
+      };
+
+      // 儲存至歷史紀錄中（最多保存 100 筆，避免記憶體塞爆）
+      room.history.push(messageData);
+      if (room.history.length > 100) room.history.shift();
+
+      io.to(session.roomId).emit('chat message', messageData);
     }
   });
 
-  // 3. 主動離開
+  // 4. 使用者主動離開（或者經過 30 句驗證後離開）
   socket.on('leave room', () => {
-    handleLeave(socket);
+    if (session.roomId) {
+      const roomId = session.roomId;
+      socket.to(roomId).emit('partner left'); // 告訴對方
+      socket.leave(roomId);
+
+      // 清除房間及對方狀態
+      if (rooms.has(roomId)) {
+        const room = rooms.get(roomId);
+        const partnerId = room.users.find(id => id !== sessionId);
+        const partnerSession = sessions.get(partnerId);
+        if (partnerSession) partnerSession.roomId = null;
+        rooms.delete(roomId);
+      }
+      session.roomId = null;
+    }
   });
 
-  // 4. 斷線處理
+  // 5. 斷線處理（可能是關閉網頁或按重整）
   socket.on('disconnect', () => {
-    console.log(`[斷線] 使用者已離線: ${socket.id}`);
-
-    // 從所有等待佇列中清理這個 Socket
+    // 先從排隊序列中移除
     for (const key in waitingQueues) {
-      waitingQueues[key] = waitingQueues[key].filter(id => id !== socket.id);
+      waitingQueues[key] = waitingQueues[key].filter(sId => sId !== sessionId);
     }
 
-    handleLeave(socket);
+    // 啟動 15 秒斷線計時器（給予重整網頁的緩衝時間）
+    session.disconnectTimer = setTimeout(() => {
+      if (session.roomId && rooms.has(session.roomId)) {
+        const roomId = session.roomId;
+        io.to(roomId).emit('partner left');
+
+        const room = rooms.get(roomId);
+        const partnerId = room.users.find(id => id !== sessionId);
+        const partnerSession = sessions.get(partnerId);
+        if (partnerSession) partnerSession.roomId = null;
+
+        rooms.delete(roomId);
+        session.roomId = null;
+      }
+    }, 15000); 
   });
 });
 
-// 根據特定的密語 Key 進行 1-on-1 配對
+// 配對邏輯：將 Socket.id 改為用 sessionId 取出配對
 function tryMatch(key) {
   const queue = waitingQueues[key];
   if (!queue) return;
 
   while (queue.length >= 2) {
-    const player1Id = queue.shift();
-    const player2Id = queue.shift();
+    const user1Id = queue.shift();
+    const user2Id = queue.shift();
 
-    const socket1 = io.sockets.sockets.get(player1Id);
-    const socket2 = io.sockets.sockets.get(player2Id);
+    const session1 = sessions.get(user1Id);
+    const session2 = sessions.get(user2Id);
 
-    // 確保兩人都還在線上
-    if (socket1 && socket2) {
-      const roomId = `room_${player1Id}_${player2Id}`;
+    // 檢查兩邊是否都在線上（且沒有啟動斷線計時器）
+    const isOnline = (sess) => sess && sess.socketId && !sess.disconnectTimer;
 
-      socket1.join(roomId);
-      socket2.join(roomId);
+    if (isOnline(session1) && isOnline(session2)) {
+      const roomId = `room_${user1Id}_${user2Id}`;
+      const room = { msgCount: 0, history: [], users: [user1Id, user2Id] };
+      rooms.set(roomId, room);
 
-      // 儲存房間資訊與所使用的密語
-      userSessions.set(player1Id, { roomId, secretKey: key });
-      userSessions.set(player2Id, { roomId, secretKey: key });
+      session1.roomId = roomId;
+      session2.roomId = roomId;
 
-      // 發送配對成功訊息（並告知對方是否使用了相同密語）
-      io.to(roomId).emit('matched', { secretKey: key });
-      console.log(`[配對成功] 密語 [${key}] 房間 ${roomId} 建立 (成員: ${player1Id}, ${player2Id})`);
+      const socket1 = io.sockets.sockets.get(session1.socketId);
+      const socket2 = io.sockets.sockets.get(session2.socketId);
+
+      if (socket1) socket1.join(roomId);
+      if (socket2) socket2.join(roomId);
+
+      if (socket1) socket1.emit('matched', { secretKey: key, partner: { nickname: session2.nickname, gender: session2.gender } });
+      if (socket2) socket2.emit('matched', { secretKey: key, partner: { nickname: session1.nickname, gender: session1.gender } });
     } else {
-      // 補回開頭
-      if (socket1) queue.unshift(player1Id);
-      if (socket2) queue.unshift(player2Id);
+      if (isOnline(session1)) queue.unshift(user1Id);
+      if (isOnline(session2)) queue.unshift(user2Id);
     }
   }
 }
 
-// 離開房間邏輯
-function handleLeave(socket) {
-  const session = userSessions.get(socket.id);
-  if (session) {
-    const { roomId } = session;
-    socket.to(roomId).emit('partner left');
-    socket.leave(roomId);
-    userSessions.delete(socket.id);
-    console.log(`[離開] ${socket.id} 離開了房間 ${roomId}`);
-  }
-}
-
-app.use(express.static(path.join(__dirname)));
-
-// 預設進入根目錄時，開啟 Home.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Home.html'));
-});
-
-// 監聽 start match 時，接收傳入的 userInfo { nickname, gender, secretKey }
-io.on('connection', (socket) => {
-
-  socket.on('start match', (data) => {
-    // data 包含 { nickname, gender, secretKey }
-    const nickname = data?.nickname || '匿名者';
-    const gender = data?.gender || 'unknown';
-    const secretKey = data?.secretKey;
-    const key = secretKey && secretKey.trim() !== '' ? secretKey.trim().toLowerCase() : 'default';
-
-    if (!userSessions.has(socket.id)) {
-      if (!waitingQueues[key]) waitingQueues[key] = [];
-
-      // 將使用者的資訊連同 socket.id 存入佇列
-      if (!waitingQueues[key].some(item => item.id === socket.id)) {
-        waitingQueues[key].push({ id: socket.id, nickname, gender });
-        socket.emit('status', '正在為您尋找陌生人...');
-        tryMatch(key);
-      }
-    }
-  });
-
-  // ...其餘配對 logic 中，配對成功時把對方的 (nickname, gender) 發送給彼此...
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`伺服器啟動完成，請存取: http://localhost:${PORT}`);
 });
