@@ -2,281 +2,181 @@
 <html lang="zh-TW">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>有聊 havetalk - 配對區</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: #1e1e1e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; color: white; }
-    header { background: #2a2a2a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-    header h1 { font-size: 1.2rem; }
-    .btn-danger { background: #fa3e3e; color: white; padding: 8px 16px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-    
-    #main-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; }
-    
-    .setup-card { width: 100%; max-width: 360px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-    .secret-input { width: 100%; padding: 15px; border-radius: 4px; border: none; background-color: #dcdcdc; font-size: 1.2rem; text-align: center; color: #333; outline: none; }
-    .secret-input::placeholder { color: #888; }
-    .start-btn { width: 100%; padding: 15px; background-color: #00b050; color: white; font-size: 1.3rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
-    .start-btn:hover { background-color: #009343; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有聊 havetalk - 進入頁面</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    #chat-box { width: 100%; height: 100%; padding: 15px; overflow-y: auto; display: none; flex-direction: column; gap: 10px; background-color: #f0f2f5; color: #333; }
-    .system-msg { align-self: center; background: #e1e3e8; color: #555; padding: 6px 14px; border-radius: 10px; font-size: 0.85rem; margin: 5px 0; }
-    .message { max-width: 70%; padding: 10px 14px; border-radius: 12px; word-wrap: break-word; font-size: 0.95rem; display: flex; flex-direction: column; }
-    .message .sender-name { font-size: 0.75rem; margin-bottom: 3px; opacity: 0.8; }
-    .my-message { align-self: flex-end; background: #0084ff; color: white; }
-    .other-message { align-self: flex-start; background: #e4e6eb; color: #050505; }
+        body {
+            background-color: #1e1e1e;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
 
-    #input-area { display: none; padding: 10px; background: white; border-top: 1px solid #ddd; }
-    #message-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 1rem; }
-    #send-btn { margin-left: 10px; padding: 0 20px; background: #0084ff; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
-    #send-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .container {
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
 
-    /* 自訂彈窗 Modal 樣式 */
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.6); display: none;
-      justify-content: center; align-items: center; z-index: 1000;
-    }
-    .modal-card {
-      background: #2a2a2a; border-radius: 8px; width: 90%; max-width: 360px;
-      padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center;
-      position: relative;
-    }
-    .modal-title { font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; color: #fff; }
-    .modal-input {
-      width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555;
-      background: #333; color: white; margin-bottom: 20px; text-align: center;
-      font-size: 1rem; outline: none;
-    }
-    .modal-actions {
-      display: flex; justify-content: space-between; align-items: center; margin-top: 10px;
-    }
-    .btn-report {
-      background: #e67e22; color: white; padding: 8px 14px; border-radius: 4px;
-      border: none; cursor: pointer; font-weight: bold; font-size: 0.85rem;
-    }
-    .btn-modal-leave {
-      background: #fa3e3e; color: white; padding: 8px 16px; border-radius: 4px;
-      border: none; cursor: pointer; font-weight: bold; font-size: 0.85rem;
-    }
-    .btn-modal-cancel {
-      position: absolute; top: 10px; right: 15px; background: transparent;
-      border: none; color: #aaa; font-size: 1.2rem; cursor: pointer;
-    }
-  </style>
+        /* 暱稱輸入框 */
+        .nickname-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 4px;
+            border: none;
+            background-color: #dcdcdc;
+            font-size: 1.2rem;
+            text-align: center;
+            color: #333;
+            outline: none;
+        }
+
+        .nickname-input::placeholder {
+            color: #888;
+        }
+
+        /* 性別選擇區域 */
+        .gender-group {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .gender-btn {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .gender-btn svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        /* 被選中的按鈕特效 */
+        .gender-btn.selected {
+            border-color: #00b050;
+            box-shadow: 0 0 12px rgba(0, 176, 80, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* 下一步按鈕 */
+        .next-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #00b050;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .next-btn:hover {
+            background-color: #009343;
+        }
+    </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>有聊 havetalk</h1>
-    <button id="leave-btn" class="btn-danger" style="display: none;">離開</button>
-  </header>
+    <div class="container">
+        <!-- 暱稱輸入框 -->
+        <input type="text" id="nickname" class="nickname-input" placeholder="暱稱" maxlength="10" autocomplete="off" />
 
-  <div id="main-content">
-    <div id="setup-card" class="setup-card">
-      <input type="text" id="secret-key" class="secret-input" placeholder="暗號 (選填)" autocomplete="off" />
-      <button id="start-match-btn" class="start-btn">開始配對</button>
+        <!-- 性別選擇按鈕 -->
+        <div class="gender-group">
+            <!-- 男 (Blue) -->
+            <div class="gender-btn" id="btn-male" data-gender="male">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#0095f6" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="10" cy="14" r="5"></circle>
+                    <line x1="19" y1="5" x2="13.6" y2="10.4"></line>
+                    <polyline points="14 5 19 5 19 10"></polyline>
+                </svg>
+            </div>
+
+            <!-- 女 (Pink) -->
+            <div class="gender-btn" id="btn-female" data-gender="female">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff5a92" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="9" r="5"></circle>
+                    <line x1="12" y1="14" x2="12" y2="21"></line>
+                    <line x1="9" y1="18" x2="15" y2="18"></line>
+                </svg>
+            </div>
+        </div>
+
+        <!-- 進入配對頁面按鈕 -->
+        <button id="next-btn" class="next-btn">下一步</button>
     </div>
-    <div id="chat-box"></div>
-  </div>
 
-  <form id="input-area">
-    <input type="text" id="message-input" placeholder="請先開始配對..." autocomplete="off" disabled required />
-    <button type="submit" id="send-btn" disabled>傳送</button>
-  </form>
+    <script>
+        let selectedGender = null;
 
-  <!-- 離場確認彈窗 Modal -->
-  <div id="leave-modal" class="modal-overlay">
-    <div class="modal-card">
-      <button id="modal-close-btn" class="btn-modal-cancel">&times;</button>
-      <div id="modal-title" class="modal-title">是否確定離開？</div>
-      <input type="text" id="leave-verify-input" class="modal-input" placeholder="請輸入 Leave" style="display: none;" autocomplete="off" />
-      <div class="modal-actions">
-        <button id="report-btn" class="btn-report">檢舉/回報</button>
-        <button id="confirm-leave-btn" class="btn-modal-leave">離開</button>
-      </div>
-    </div>
-  </div>
+        const btnMale = document.getElementById('btn-male');
+        const btnFemale = document.getElementById('btn-female');
+        const nicknameInput = document.getElementById('nickname');
+        const nextBtn = document.getElementById('next-btn');
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    let sessionId = localStorage.getItem('chatSessionId');
-    if (!sessionId) {
-      sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('chatSessionId', sessionId);
-    }
+        btnMale.addEventListener('click', () => {
+            selectedGender = 'male';
+            btnMale.classList.add('selected');
+            btnFemale.classList.remove('selected');
+        });
 
-    const socket = io({ auth: { sessionId } });
+        btnFemale.addEventListener('click', () => {
+            selectedGender = 'female';
+            btnFemale.classList.add('selected');
+            btnMale.classList.remove('selected');
+        });
 
-    const leaveBtn = document.getElementById('leave-btn');
-    const setupCard = document.getElementById('setup-card');
-    const startMatchBtn = document.getElementById('start-match-btn');
-    const secretInput = document.getElementById('secret-key');
-    const chatBox = document.getElementById('chat-box');
-    const inputArea = document.getElementById('input-area');
-    const form = document.getElementById('input-area');
-    const input = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
+        nextBtn.addEventListener('click', () => {
+            const nickname = nicknameInput.value.trim();
 
-    // Modal 元件
-    const leaveModal = document.getElementById('leave-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const leaveVerifyInput = document.getElementById('leave-verify-input');
-    const reportBtn = document.getElementById('report-btn');
-    const confirmLeaveBtn = document.getElementById('confirm-leave-btn');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
+            if (!nickname) {
+                alert('請輸入暱稱！');
+                nicknameInput.focus();
+                return;
+            }
 
-    let inRoom = false;
-    let msgCount = 0;
+            if (!selectedGender) {
+                alert('請選擇您的性別！');
+                return;
+            }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const nickname = localStorage.getItem('userNickname');
-      const gender = localStorage.getItem('userGender');
-      if (!nickname || !gender) window.location.href = 'Home.html';
-    });
+            // 儲存資料並進入 chat.html 準備配對
+            localStorage.setItem('userNickname', nickname);
+            localStorage.setItem('userGender', selectedGender);
 
-    startMatchBtn.addEventListener('click', () => {
-      const nickname = localStorage.getItem('userNickname');
-      const gender = localStorage.getItem('userGender');
-      const secretKey = secretInput.value;
-
-      setupCard.style.display = 'none';
-      chatBox.style.display = 'flex';
-      inputArea.style.display = 'flex';
-      leaveBtn.style.display = 'inline-block';
-
-      chatBox.innerHTML = '';
-      msgCount = 0;
-      socket.emit('start match', { nickname, gender, secretKey });
-      appendSystemMsg('尋找對象中，請稍候...');
-    });
-
-    // === 點擊離開按鈕：彈出客製化 Modal ===
-    leaveBtn.addEventListener('click', () => {
-      leaveVerifyInput.value = '';
-      
-      if (msgCount >= 30) {
-        modalTitle.innerText = '雙方聊天已達 30 句，請輸入 Leave 驗證後離開：';
-        leaveVerifyInput.style.display = 'block';
-      } else {
-        modalTitle.innerText = '是否確定離開聊天室？';
-        leaveVerifyInput.style.display = 'none';
-      }
-
-      leaveModal.style.display = 'flex';
-    });
-
-    // Modal 關閉按鈕
-    modalCloseBtn.addEventListener('click', () => {
-      leaveModal.style.display = 'none';
-    });
-
-    // 左下角：檢舉/回報 按鈕邏輯
-    reportBtn.addEventListener('click', () => {
-      const reason = prompt('請輸入檢舉或回報原因：');
-      if (reason && reason.trim()) {
-        alert('感謝您的回報，我們會盡快審核！');
-      }
-    });
-
-    // 右下角：確認離開 按鈕邏輯
-    confirmLeaveBtn.addEventListener('click', () => {
-      if (msgCount >= 30) {
-        if (leaveVerifyInput.value !== 'Leave') {
-          alert('驗證碼輸入錯誤！請輸入 Leave 才能離開。');
-          return;
-        }
-      }
-
-      // 驗證通過或未滿 30 句，執行離開
-      socket.emit('leave room');
-      window.location.reload();
-    });
-
-    socket.on('status', (msg) => {
-      appendSystemMsg(msg);
-    });
-
-    socket.on('matched', (data) => {
-      setChatState(true);
-      msgCount = 0;
-      const secretNotice = data.secretKey !== 'default' ? `（暗號：${data.secretKey}）` : '';
-      const genderSign = data.partner.gender === 'male' ? '♂ (男)' : '♀ (女)';
-      appendSystemMsg(`🎉 配對成功${secretNotice}！對方是【${data.partner.nickname} ${genderSign}】，連線成功，可以開始聊天了！`);
-    });
-
-    socket.on('rejoined', (data) => {
-      setupCard.style.display = 'none';
-      chatBox.style.display = 'flex';
-      inputArea.style.display = 'flex';
-      leaveBtn.style.display = 'inline-block';
-      setChatState(true);
-
-      msgCount = data.msgCount;
-      const genderSign = data.partner.gender === 'male' ? '♂ (男)' : '♀ (女)';
-      
-      appendSystemMsg(`🔄 您已重新連線！與【${data.partner.nickname} ${genderSign}】的聊天繼續。`);
-      
-      data.history.forEach(msg => {
-        renderMessage(msg.senderId, msg.senderName, msg.text);
-      });
-    });
-
-    socket.on('partner left', () => {
-      setChatState(false);
-      appendSystemMsg('❌ 陌生人已離開聊天室。按下上方「離開」按鈕可重新開始。');
-    });
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (input.value.trim() && inRoom) {
-        socket.emit('chat message', input.value);
-        input.value = '';
-      }
-    });
-
-    socket.on('chat message', (data) => {
-      msgCount = data.msgCount;
-      renderMessage(data.senderId, data.senderName, data.text);
-    });
-
-    function renderMessage(senderId, senderName, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.classList.add('message');
-
-      if (senderId === sessionId) {
-        msgDiv.classList.add('my-message');
-        msgDiv.textContent = text;
-      } else {
-        msgDiv.classList.add('other-message');
-        const nameSpan = document.createElement('span');
-        nameSpan.classList.add('sender-name');
-        nameSpan.textContent = senderName;
-        msgDiv.appendChild(nameSpan);
-        msgDiv.appendChild(document.createTextNode(text));
-      }
-
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function setChatState(active) {
-      inRoom = active;
-      input.disabled = !active;
-      sendBtn.disabled = !active;
-      input.placeholder = active ? "輸入訊息..." : "配對已結束...";
-    }
-
-    function appendSystemMsg(text) {
-      const sysDiv = document.createElement('div');
-      sysDiv.classList.add('system-msg');
-      sysDiv.textContent = text;
-      chatBox.appendChild(sysDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-  </script>
+            window.location.href = 'chat.html';
+        });
+    </script>
 </body>
 
 </html>
