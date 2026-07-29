@@ -125,3 +125,37 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`伺服器運作中: http://localhost:${PORT}`);
 });
+// server.js (精簡說明修改處)
+// ...前面的套件引入與宣告維持不變...
+
+app.use(express.static(path.join(__dirname)));
+
+// 預設進入根目錄時，開啟 Home.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Home.html'));
+});
+
+// 監聽 start match 時，接收傳入的 userInfo { nickname, gender, secretKey }
+io.on('connection', (socket) => {
+
+  socket.on('start match', (data) => {
+    // data 包含 { nickname, gender, secretKey }
+    const nickname = data?.nickname || '匿名者';
+    const gender = data?.gender || 'unknown';
+    const secretKey = data?.secretKey;
+    const key = secretKey && secretKey.trim() !== '' ? secretKey.trim().toLowerCase() : 'default';
+
+    if (!userSessions.has(socket.id)) {
+      if (!waitingQueues[key]) waitingQueues[key] = [];
+
+      // 將使用者的資訊連同 socket.id 存入佇列
+      if (!waitingQueues[key].some(item => item.id === socket.id)) {
+        waitingQueues[key].push({ id: socket.id, nickname, gender });
+        socket.emit('status', '正在為您尋找陌生人...');
+        tryMatch(key);
+      }
+    }
+  });
+
+  // ...其餘配對 logic 中，配對成功時把對方的 (nickname, gender) 發送給彼此...
+});

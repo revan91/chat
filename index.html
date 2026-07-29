@@ -5,7 +5,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WooTalk Clone - 密語匿名配對</title>
+    <title>有聊 havetalk</title>
     <style>
       * {
         box-sizing: border-box;
@@ -151,11 +151,11 @@
   <body>
 
     <header>
-      <h1>吾聊 Clone</h1>
+      <h1>有聊 havetalk</h1>
       <div class="controls">
         <input type="text" id="secret-key" class="secret-input" placeholder="暗號 (選填)" autocomplete="off" />
         <button id="match-btn" class="btn btn-action">開始配對</button>
-        <button id="leave-btn" class="btn btn-danger" style="display: none;">離開 / 下一位</button>
+        <button id="leave-btn" class="btn btn-danger" style="display: none;">離開</button>
       </div>
     </header>
 
@@ -270,6 +270,39 @@
         sysDiv.textContent = text;
         chatBox.appendChild(sysDiv);
         chatBox.scrollTop = chatBox.scrollHeight;
+      }
+      // index.html 中的 <script> 區塊
+
+      // 頁面載入時檢查是否有暱稱資訊
+      window.addEventListener('DOMContentLoaded', () => {
+        const nickname = localStorage.getItem('userNickname');
+        const gender = localStorage.getItem('userGender');
+
+        // 如果沒有填寫過資料，強迫退回 Home.html
+        if (!nickname || !gender) {
+          window.location.href = 'Home.html';
+          return;
+        }
+
+        // 解析 URL 參數是否需要自動配對
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('autoStart') === 'true') {
+          startMatching();
+        }
+      });
+
+      function startMatching() {
+        const nickname = localStorage.getItem('userNickname');
+        const gender = localStorage.getItem('userGender');
+        const secretKey = secretInput.value;
+
+        chatBox.innerHTML = '';
+        // 將暱稱與性別傳給後端
+        socket.emit('start match', { nickname, gender, secretKey });
+
+        matchBtn.disabled = true;
+        secretInput.disabled = true;
+        appendSystemMsg('尋找對象中，請稍候...');
       }
     </script>
   </body>
