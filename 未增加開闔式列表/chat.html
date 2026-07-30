@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有聊 havetalk</title>
+    <link rel="stylesheet" href="style_chat.css">
+  </head>
+
+  <body>
+
+    <header>
+      <h1>有聊 havetalk</h1>
+      <button id="leave-btn" class="btn-danger" style="display: none;">離開</button>
+    </header>
+
+    <div id="main-content">
+      <div id="setup-card" class="setup-card">
+        <input type="text" id="secret-key" class="secret-input" placeholder="暗號 (選填)" autocomplete="off" />
+        <button id="start-match-btn" class="start-btn">開始配對</button>
+      </div>
+      <div id="chat-box"></div>
+    </div>
+
+    <form id="input-area">
+      <input type="text" id="message-input" placeholder="請先開始配對..." autocomplete="off" disabled required />
+      <button type="submit" id="send-btn" disabled>傳送</button>
+    </form>
+
+    <!-- 離場確認彈窗 Modal -->
+    <div id="leave-modal" class="modal-overlay">
+      <div class="modal-card">
+        <button id="modal-close-btn" class="btn-modal-cancel">&times;</button>
+        <div id="modal-title" class="modal-title">是否確定離開？</div>
+        <input type="text" id="leave-verify-input" class="modal-input" placeholder="請輸入 Leave" style="display: none;"
+          autocomplete="off" />
+        <div class="modal-actions">
+          <button id="report-btn" class="btn-report">檢舉/回報</button>
+          <button id="confirm-leave-btn" class="btn-modal-leave">離開</button>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="chat.js"></script>
+  </body>
+
+</html>

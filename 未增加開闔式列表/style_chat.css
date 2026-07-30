@@ -1,0 +1,259 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #BFB3EB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color: white;
+}
+
+header {
+    background: #9b84ef;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+header h1 {
+    font-size: 1.2rem;
+}
+
+.btn-danger {
+    background: #fa3e3e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.setup-card {
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.secret-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #dcdcdc;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #333;
+    outline: none;
+}
+
+.secret-input::placeholder {
+    color: #888;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #35B4CE;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.start-btn:hover {
+    background-color: #126BE5;
+}
+
+#chat-box {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.system-msg {
+    align-self: center;
+    background: #e1e3e8;
+    color: #555;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin: 5px 0;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.message .sender-name {
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+    opacity: 0.8;
+}
+
+.my-message {
+    align-self: flex-end;
+    background: #0084ff;
+    color: white;
+}
+
+.other-message {
+    align-self: flex-start;
+    background: #e4e6eb;
+    color: #050505;
+}
+
+#input-area {
+    display: none;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ddd;
+}
+
+#message-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 1rem;
+}
+
+#send-btn {
+    margin-left: 10px;
+    padding: 0 20px;
+    background: #0084ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* 自訂彈窗 Modal 樣式 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: #2a2a2a;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 360px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #333;
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1rem;
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-report {
+    background: #e67e22;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.btn-modal-leave {
+    background: #fa3e3e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.btn-modal-cancel {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+}

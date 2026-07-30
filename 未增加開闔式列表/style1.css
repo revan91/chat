@@ -1,0 +1,94 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #BFB3EB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: white;
+}
+
+.container {
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* 暱稱輸入框 */
+.nickname-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #dcdcdc;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #333;
+    outline: none;
+}
+
+.nickname-input::placeholder {
+    color: #888;
+}
+
+/* 性別選擇區域 */
+.gender-group {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+.gender-btn {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.gender-btn svg {
+    width: 48px;
+    height: 48px;
+}
+
+/* 被選中的按鈕特效 */
+.gender-btn.selected {
+    border-color: #00b050;
+    box-shadow: 0 0 12px rgba(0, 176, 80, 0.5);
+    transform: scale(1.05);
+}
+
+/* 下一步按鈕 */
+.next-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #35B4CE;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.next-btn:hover {
+    background-color: #126BE5;
+}

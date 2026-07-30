@@ -1,0 +1,281 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #BFB3EB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 主內容區塊 */
+.container {
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* 性別選擇區域 */
+.gender-group {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+.gender-btn {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.gender-btn svg {
+    width: 48px;
+    height: 48px;
+}
+
+/* 被選中的按鈕特效 */
+.gender-btn.selected {
+    border-color: #00b050;
+    box-shadow: 0 0 12px rgba(0, 176, 80, 0.5);
+    transform: scale(1.05);
+}
+
+/* 暱稱輸入框 */
+.nickname-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #dcdcdc;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #333;
+    outline: none;
+}
+
+.nickname-input::placeholder {
+    color: #888;
+}
+
+/* 下一步按鈕 */
+.next-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #35B4CE;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.next-btn:hover {
+    background-color: #126BE5;
+}
+
+/* ================= 側邊選單樣式 ================= */
+
+/* 漢堡按鈕 (固定於右上角) */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    font-size: 28px;
+    color: #ED5A8C;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: left 0.3s ease;
+}
+
+/* 暗色遮罩 */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 900;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 側邊選單本體 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background-color: #f2f2f2;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+
+}
+/* 當 body 裡面有 .sidebar.active 時，控制裡面的 .toggle-btn */
+body:has(.sidebar.active) .toggle-btn {
+    left: 240px; /* 移到選單邊緣附近 */
+    transition: left 0.3s ease;
+}
+.sidebar.active {
+    left: 0;
+}
+
+/* Logo 區塊 */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+    background-color: #eeeeee;
+}
+
+.logo-box {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #ff7e5f, #ff2a5f);
+    border-radius: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(255, 42, 95, 0.3);
+}
+
+.logo-text {
+    color: white;
+    font-size: 55px;
+    font-weight: bold;
+}
+
+/* 分類標頭 */
+.menu-category {
+    background-color: #e9e9e9;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+}
+
+/* 選單清單 */
+.menu-list {
+    list-style: none;
+    background-color: #fff;
+}
+
+.menu-list li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-list a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.menu-list a:hover {
+    background-color: #f9f9f9;
+}
+
+/* 圖示風格 */
+.icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #ff5232;
+    width: 24px;
+    text-align: center;
+}
+
+/* 開關控制項 */
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+}
+
+/* iOS Toggle 切換鈕 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #ff5232;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+

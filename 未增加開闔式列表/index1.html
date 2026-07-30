@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>有聊 havetalk</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+
+        <div class="container">
+            
+
+            <!-- 性別選擇按鈕 -->
+            <div class="gender-group">
+                <!-- 男 (Blue) -->
+                <div class="gender-btn" id="btn-male" data-gender="male">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#0095f6" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="10" cy="14" r="5"></circle>
+                        <line x1="19" y1="5" x2="13.6" y2="10.4"></line>
+                        <polyline points="14 5 19 5 19 10"></polyline>
+                    </svg>
+                </div>
+
+                <!-- 女 (Pink) -->
+                <div class="gender-btn" id="btn-female" data-gender="female">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#ff5a92" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="9" r="5"></circle>
+                        <line x1="12" y1="14" x2="12" y2="21"></line>
+                        <line x1="9" y1="18" x2="15" y2="18"></line>
+                    </svg>
+                </div>
+            </div>
+            <!-- 暱稱輸入框 -->
+            <input type="text" id="nickname" class="nickname-input" placeholder="暱稱" maxlength="10"
+                autocomplete="off" />
+            <!-- 進入配對頁面按鈕 -->
+            <button id="next-btn" class="next-btn">下一步</button>
+        </div>
+
+
+        <script src="index.js"></script>
+    </body>
+
+</html>

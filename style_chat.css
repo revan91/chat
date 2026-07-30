@@ -1,0 +1,439 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #BFB3EB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    color: white;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 主內容區塊 (密語輸入框 & 聊天室) */
+#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.setup-card {
+    width: 100%;
+    max-width: 360px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.secret-input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 4px;
+    border: none;
+    background-color: #dcdcdc;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #333;
+    outline: none;
+}
+
+.secret-input::placeholder {
+    color: #888;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #35B4CE;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.start-btn:hover {
+    background-color: #126BE5;
+}
+
+/* 聊天內容區 */
+#chat-box {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    overflow-y: auto;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.system-msg {
+    align-self: center;
+    background: #e1e3e8;
+    color: #555;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    margin: 5px 0;
+}
+
+.message {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.message .sender-name {
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+    opacity: 0.8;
+}
+
+.my-message {
+    align-self: flex-end;
+    background: #0084ff;
+    color: white;
+}
+
+.other-message {
+    align-self: flex-start;
+    background: #e4e6eb;
+    color: #050505;
+}
+
+/* 訊息輸入欄位區塊 */
+#input-area {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ddd;
+}
+
+/* 離開按鈕樣式 */
+.btn-leave {
+    background: #fa3e3e;
+    color: white;
+    padding: 0 16px;
+    height: 42px;
+    border-radius: 20px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.btn-leave:hover {
+    background: #d32f2f;
+}
+
+#message-input {
+    flex: 1;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 1rem;
+}
+
+#send-btn {
+    height: 42px;
+    padding: 0 20px;
+    background: #0084ff;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* 自訂彈窗 Modal 樣式 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-card {
+    background: #2a2a2a;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 360px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    position: relative;
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: #333;
+    color: white;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1rem;
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.btn-report {
+    background: #e67e22;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.btn-modal-leave {
+    background: #fa3e3e;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.btn-modal-cancel {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* ================= 側邊選單樣式 ================= */
+
+/* 漢堡按鈕 (固定於左上角) */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px; 
+    font-size: 28px;
+    color: #ED5A8C;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: left 0.3s ease;
+}
+
+/* 暗色遮罩 */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 900;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 側邊選單本體 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background-color: #f2f2f2;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+body:has(.sidebar.active) .toggle-btn {
+    left: 240px;
+    transition: left 0.3s ease;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+    background-color: #eeeeee;
+}
+
+.logo-box {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #ff7e5f, #ff2a5f);
+    border-radius: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(255, 42, 95, 0.3);
+}
+
+.logo-text {
+    color: white;
+    font-size: 55px;
+    font-weight: bold;
+}
+
+.menu-category {
+    background-color: #e9e9e9;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.menu-list {
+    list-style: none;
+    background-color: #fff;
+}
+
+.menu-list li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-list a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.menu-list a:hover {
+    background-color: #f9f9f9;
+}
+
+.icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #ff5232;
+    width: 24px;
+    text-align: center;
+}
+
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #ff5232;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}

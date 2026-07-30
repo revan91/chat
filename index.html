@@ -4,111 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>有聊 havetalk - 進入頁面</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #1e1e1e;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: white;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 360px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-        }
-
-        /* 暱稱輸入框 */
-        .nickname-input {
-            width: 100%;
-            padding: 15px;
-            border-radius: 4px;
-            border: none;
-            background-color: #dcdcdc;
-            font-size: 1.2rem;
-            text-align: center;
-            color: #333;
-            outline: none;
-        }
-
-        .nickname-input::placeholder {
-            color: #888;
-        }
-
-        /* 性別選擇區域 */
-        .gender-group {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            width: 100%;
-        }
-
-        .gender-btn {
-            width: 80px;
-            height: 80px;
-            background-color: white;
-            border-radius: 4px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .gender-btn svg {
-            width: 48px;
-            height: 48px;
-        }
-
-        /* 被選中的按鈕特效 */
-        .gender-btn.selected {
-            border-color: #00b050;
-            box-shadow: 0 0 12px rgba(0, 176, 80, 0.5);
-            transform: scale(1.05);
-        }
-
-        /* 下一步按鈕 */
-        .next-btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #00b050;
-            color: white;
-            font-size: 1.3rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .next-btn:hover {
-            background-color: #009343;
-        }
-    </style>
+    <title>有聊 havetalk</title>
+    <!-- 引入 Font Awesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 外部 CSS 檔案 -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="container">
-        <!-- 暱稱輸入框 -->
-        <input type="text" id="nickname" class="nickname-input" placeholder="暱稱" maxlength="10" autocomplete="off" />
+    <!-- 1. 漢堡按鈕 (開關選單用) -->
+    <button class="toggle-btn" id="toggleBtn">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
+    <!-- 2. 遮罩層 (點擊選單外部可關閉) -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 3. 側邊選單主體 -->
+    <div class="sidebar" id="sidebar">
+        <!-- 上方 Logo 區域 -->
+        <div class="logo-container">
+            <div class="logo-box">
+                <span class="logo-text">W</span>
+            </div>
+        </div>
+
+        <!-- 第一區塊：主要選單 -->
+        <ul class="menu-list">
+            <li><a href="#"><i class="fa-regular fa-comment-dots icon"></i>使用密語</a></li>
+            <li><a href="#"><i class="fa-regular fa-question-circle icon"></i>說明</a></li>
+            <li><a href="#"><i class="fa-solid fa-star icon"></i>聯絡吾聊</a></li>
+        </ul>
+
+        <!-- 第二區塊：捷徑 -->
+        <div class="menu-category">捷徑</div>
+        <ul class="menu-list">
+            <li><a href="#"><i class="fa-solid fa-right-from-bracket icon"></i>前往粉絲專頁</a></li>
+            <li><a href="#"><i class="fa-solid fa-magnifying-glass icon"></i>前往尋人啟事</a></li>
+        </ul>
+
+        <!-- 第三區塊：設定 -->
+        <div class="menu-category">設定</div>
+        <ul class="menu-list">
+            <li class="toggle-item">
+                <div class="item-left">
+                    <i class="fa-solid fa-volume-high icon"></i>新訊息音效提醒
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 4. 主內容區域 (性別與暱稱輸入) -->
+    <div class="container">
         <!-- 性別選擇按鈕 -->
         <div class="gender-group">
             <!-- 男 (Blue) -->
@@ -132,51 +84,15 @@
             </div>
         </div>
 
+        <!-- 暱稱輸入框 -->
+        <input type="text" id="nickname" class="nickname-input" placeholder="暱稱" maxlength="10" autocomplete="off" />
+
         <!-- 進入配對頁面按鈕 -->
         <button id="next-btn" class="next-btn">下一步</button>
     </div>
 
-    <script>
-        let selectedGender = null;
-
-        const btnMale = document.getElementById('btn-male');
-        const btnFemale = document.getElementById('btn-female');
-        const nicknameInput = document.getElementById('nickname');
-        const nextBtn = document.getElementById('next-btn');
-
-        btnMale.addEventListener('click', () => {
-            selectedGender = 'male';
-            btnMale.classList.add('selected');
-            btnFemale.classList.remove('selected');
-        });
-
-        btnFemale.addEventListener('click', () => {
-            selectedGender = 'female';
-            btnFemale.classList.add('selected');
-            btnMale.classList.remove('selected');
-        });
-
-        nextBtn.addEventListener('click', () => {
-            const nickname = nicknameInput.value.trim();
-
-            if (!nickname) {
-                alert('請輸入暱稱！');
-                nicknameInput.focus();
-                return;
-            }
-
-            if (!selectedGender) {
-                alert('請選擇您的性別！');
-                return;
-            }
-
-            // 儲存資料並進入 chat.html 準備配對
-            localStorage.setItem('userNickname', nickname);
-            localStorage.setItem('userGender', selectedGender);
-
-            window.location.href = 'chat.html';
-        });
-    </script>
+    <!-- 外部 JS 檔案 -->
+    <script src="index.js"></script>
 </body>
 
 </html>
