@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>有聊 havetalk</title>
-    <!-- Font Awesome 圖示庫 -->
+    <title>贊助我們 - 有聊 havetalk</title>
+    <!-- 引入 Font Awesome 圖示庫 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style_chat.css">
-  </head>
+    <!-- 引入贊助頁專用 CSS -->
+    <link rel="stylesheet" href="donate.css">
+</head>
 
-  <body>
+<body>
+
     <!-- 1. 漢堡按鈕 (開關選單用) -->
     <button class="toggle-btn" id="toggleBtn">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- 2. 遮罩層 -->
+    <!-- 2. 遮罩層 (點擊選單外部可關閉) -->
     <div class="overlay" id="overlay"></div>
 
     <!-- 3. 側邊選單主體 -->
@@ -57,37 +59,35 @@
         </ul>
     </div>
 
-    <!-- 主內容區塊 -->
-    <div id="main-content">
-      <div id="setup-card" class="setup-card">
-        <input type="text" id="secret-key" class="secret-input" placeholder="暗號 (選填)" autocomplete="off" />
-        <button id="start-match-btn" class="start-btn">開始配對</button>
-      </div>
-      <div id="chat-box"></div>
-    </div>
+    <!-- 4. 畫面中央的贊助區域 -->
+    <main class="donate-container">
+        <div class="donate-card">
+            <div class="donate-header">
+                <i class="fa-solid fa-mug-hot donate-icon"></i>
+                <h2>贊助「有聊」團隊</h2>
+                <p>感謝您的支持！您的贊助能讓伺服器維修與開發團隊持續運作。</p>
+            </div>
 
-    <!-- 輸入區域：新增「離開按鈕」於左側/右側 -->
-    <form id="input-area">
-      <button type="button" id="leave-btn" class="btn-leave">離開</button>
-      <input type="text" id="message-input" placeholder="請先開始配對..." autocomplete="off" disabled required />
-      <button type="submit" id="send-btn" disabled>傳送</button>
-    </form>
+            <!-- 收款 QR Code 容器 -->
+            <div class="qrcode-wrapper">
+                <!-- 👈 請將 src 換成你的收款碼圖片路徑 (例如: images/qrcode.png) -->
+                <img src="donate.jpg" alt="收款碼 QR Code" class="qrcode-img">
+            </div>
 
-    <!-- 離場確認彈窗 Modal -->
-    <div id="leave-modal" class="modal-overlay">
-      <div class="modal-card">
-        <button id="modal-close-btn" class="btn-modal-cancel">&times;</button>
-        <div id="modal-title" class="modal-title">是否確定離開？</div>
-        <input type="text" id="leave-verify-input" class="modal-input" placeholder="請輸入 Leave" style="display: none;" autocomplete="off" />
-        <div class="modal-actions">
-          <button id="report-btn" class="btn-report">檢舉/回報</button>
-          <button id="confirm-leave-btn" class="btn-modal-leave">離開</button>
+            <!-- 轉帳/帳號備用區（點擊可複製） -->
+            <div class="account-info">
+                <p class="account-title">轉帳帳戶 (銀行代碼 396)</p>
+                <div class="account-box">
+                    <span id="accountNumber">908098930</span>
+                    <button id="copyBtn" class="copy-btn">
+                        <i class="fa-regular fa-copy"></i> 複製
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
+    </main>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="chat.js"></script>
-  </body>
+    <script src="donate.js"></script>
+</body>
 
 </html>
