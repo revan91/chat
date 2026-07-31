@@ -7,8 +7,8 @@ const app = express();
 const server = http.createServer(app);
 // 斷線偵測
 const io = new Server(server, {
-    pingTimeout:10000,  // 伺服器每隔 60 秒會向手機/瀏覽器發送一次 ping 包。
-    pingInterval: 10000, // 當伺服器發出 ping 後，如果超過 60 秒沒有收到前端的 pong 回應，伺服器就會判定該用戶已斷線。
+    pingTimeout:20000,  // 伺服器每隔 60 秒會向手機/瀏覽器發送一次 ping 包。
+    pingInterval: 25000, // 當伺服器發出 ping 後，如果超過 60 秒沒有收到前端的 pong 回應，伺服器就會判定該用戶已斷線。
 });
 
 app.use(express.static(path.join(__dirname)));
