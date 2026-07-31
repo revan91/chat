@@ -3,6 +3,20 @@
     margin: 0;
     padding: 0;
 }
+/* 1. 鎖定全域橫向滾動，防止畫面被往右拉開 */
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden; /* 關鍵：強制禁止橫向滑動 */
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. 確保聊天室主容器寬度滿版且不超出畫面 */
+#chat-box, #input-area, .sidebar {
+    box-sizing: border-box; /* 確保 padding 不會撐大寬度 */
+}
 
 body {
     background-color: #BFB3EB;
@@ -15,6 +29,7 @@ body {
     overflow-x: hidden;
     /* 避免底部輸入框或按鈕被手機 Home 條擋住 */
     padding-bottom: env(safe-area-inset-bottom);
+    touch-action: pan-y; /* 僅允許上下滑動，禁止左右手勢滑動 */
 }
 
 /* 主內容區塊 (密語輸入框 & 聊天室) */
