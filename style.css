@@ -168,7 +168,7 @@ body:has(.sidebar.active) .toggle-btn {
 .logo-box {
     width: 100px;
     height: 100px;
-    background: linear-gradient(135deg, #ff7e5f, #ff2a5f);
+    background: linear-gradient(135deg, #cf8cf1, #ad33e6);
     border-radius: 28px;
     display: flex;
     justify-content: center;
@@ -218,7 +218,7 @@ body:has(.sidebar.active) .toggle-btn {
 .icon {
     margin-right: 12px;
     font-size: 1.2rem;
-    color: #ff5232;
+    color: #ad33e6;
     width: 24px;
     text-align: center;
 }
@@ -274,7 +274,7 @@ body:has(.sidebar.active) .toggle-btn {
 }
 
 input:checked + .slider {
-    background-color: #ff5232;
+    background-color: #ad33e6;
 }
 
 input:checked + .slider:before {
