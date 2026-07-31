@@ -1,0 +1,275 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    background-color: #BFB3EB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+    touch-action: pan-y;
+}
+
+/* ================= 內容卡片容器 ================= */
+.rule-container {
+    width: 100%;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 卡片通用樣式 (模仿圖片的半透明柔和白底卡片) */
+.rule-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 首頁頂部標題卡片 */
+.header-card {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.header-card h2 {
+    font-size: 1.25rem;
+    color: #222;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.highlight-title {
+    font-size: 1.5rem;
+    color: #ff2a5f; /* 圖片上的粉紅色亮點文字 */
+    margin-top: 8px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* 卡片內文樣式 */
+.rule-card h3 {
+    font-size: 1.2rem;
+    color: #111;
+    font-weight: bold;
+}
+
+.rule-card p {
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+/* 清單樣式 */
+.rule-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.6;
+}
+
+.rule-bullet-list {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #444;
+    line-height: 1.5;
+}
+
+.warning-text {
+    margin-top: 8px;
+    color: #d92b2b !important;
+    font-weight: 500;
+}
+
+/* ================= 側邊選單樣式 ================= */
+
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 28px;
+    color: #ED5A8C;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: left 0.3s ease;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 900;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background-color: #f2f2f2;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 999;
+    overflow-y: auto;
+}
+
+body:has(.sidebar.active) .toggle-btn {
+    left: 240px;
+    transition: left 0.3s ease;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 0;
+    background-color: #eeeeee;
+}
+
+.logo-box {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #cf8cf1, #ad33e6);
+    border-radius: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(255, 42, 95, 0.3);
+}
+
+.logo-text {
+    color: white;
+    font-size: 55px;
+    font-weight: bold;
+}
+
+.menu-category {
+    background-color: #e9e9e9;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.menu-list {
+    list-style: none;
+    background-color: #fff;
+}
+
+.menu-list li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-list a {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.menu-list a:hover {
+    background-color: #f9f9f9;
+}
+
+.icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    color: #ad33e6;
+    width: 24px;
+    text-align: center;
+}
+
+.toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+.item-left {
+    display: flex;
+    align-items: center;
+}
+
+/* iOS Toggle 切換鈕 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #ad33e6;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
