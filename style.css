@@ -14,6 +14,8 @@ body {
     color: white;
     position: relative;
     overflow-x: hidden;
+    /* 避免底部輸入框或按鈕被手機 Home 條擋住 */
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* 主內容區塊 */
@@ -278,4 +280,12 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(24px);
 }
-
+.full-height {
+    height: 100vh; /* 備用方案 */
+    height: 100dvh; /* 現代手機動態高度 */
+}
+/* 移除點擊時出現的灰色高亮框 */
+button, a {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; /* 消除點擊延遲 */
+}
