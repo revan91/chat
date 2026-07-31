@@ -137,15 +137,6 @@ body {
     color: #050505;
 }
 
-/* 訊息輸入欄位區塊 */
-#input-area {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    background: white;
-    border-top: 1px solid #ddd;
-}
 
 /* 離開按鈕樣式 */
 .btn-leave {
@@ -166,15 +157,6 @@ body {
     background: #d32f2f;
 }
 
-#message-input {
-    flex: 1;
-    height: 42px;
-    padding: 0 15px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    outline: none;
-    font-size: 1rem;
-}
 
 #send-btn {
     height: 42px;
@@ -461,4 +443,49 @@ input:checked + .slider:before {
 button, a {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation; /* 消除點擊延遲 */
+}
+/* 1. 確保外層容器不超出螢幕，並正確貼齊底部 */
+#input-area {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box; /* 關鍵：確保 padding 不會撐大外框 */
+    padding: 8px 10px;
+    background: white;
+    border-top: 1px solid #ddd;
+    gap: 8px; /* 自動控制元件之間的間距 */
+}
+
+/* 2. 輸入框：彈性伸縮，優先縮小以留空間給按鈕 */
+#message-input{
+    flex: 1; /* 自動佔滿剩餘空間 */
+    min-width: 0; /* 關鍵：允許 Flex 子元素縮小至 0，防止把按鈕擠出螢幕 */
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 16px; /* 防止 iOS Safari 自動放大 */
+    box-sizing: border-box;
+}
+
+/* 3. 傳送按鈕 & 離開按鈕：固定尺寸、禁止縮放與換行 */
+#send-btn, .btn-leave {
+    flex-shrink: 0; /* 關鍵：禁止按鈕被壓縮 */
+    white-space: nowrap; /* 關鍵：文字不換行 */
+    height: 40px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }
